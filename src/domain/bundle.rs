@@ -2,7 +2,9 @@ use std::collections::HashMap;
 use std::default::Default;
 use std::fs;
 use std::path::{Path, PathBuf};
+use std::io;
 
+use crate::base::Error;
 use crate::base::Result;
 use crate::domain::{BundlePath, BundlePathBuf, Executable, Jail, Resource};
 
@@ -164,7 +166,15 @@ fn sync_copy(from: &Path, to: &BundlePath, dest: &Path) -> Result<()> {
             link_dest_absolute.display(),
             target.display()
         );
-        unix::fs::symlink(&link_dest_absolute, target)?;
+        match unix::fs::symlink(&link_dest_absolute, target) {
+            Ok(_) => (),
+            Err(e) => match e.kind() {
+                io::ErrorKind::AlreadyExists => {
+                    info!("Symlink target already exists. Skipping.")
+                },
+                _ => return Result::Err(Error::IO(e)),
+            }
+        }
         sync_copy(
             &link_dest_absolute,
             BundlePath::projection(&link_dest_absolute),
