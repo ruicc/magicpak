@@ -53,6 +53,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-18.04
+    needs: test
 #    needs: test_examples
     steps:
       - uses: actions/download-artifact@v2
