@@ -28,17 +28,6 @@ jobs:
         with:
           name: musl-executable
           path: ./target/x86_64-unknown-linux-musl/release/magicpak
-  build_docker_images:
-    name: Build and push docker images
-    runs-on: ubuntu-18.04
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: musl-executable
-      - run: docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_PASSWORD }}
-      - run: PUSH_IMAGES=true ./dockerfile/build.sh ./magicpak
   test_examples:
     name: Test examples
     runs-on: ubuntu-18.04
@@ -64,14 +53,3 @@ jobs:
           files: magicpak-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  upload:
-    name: Upload to crates.io
-    runs-on: ubuntu-18.04
-    needs: release
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/cargo@v1
-        with:
-          command: publish
-        env:
-          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
