@@ -1,8 +1,8 @@
 use std::collections::HashMap;
 use std::default::Default;
 use std::fs;
-use std::path::{Path, PathBuf};
 use std::io;
+use std::path::{Path, PathBuf};
 
 use crate::base::Error;
 use crate::base::Result;
@@ -171,9 +171,9 @@ fn sync_copy(from: &Path, to: &BundlePath, dest: &Path) -> Result<()> {
             Err(e) => match e.kind() {
                 io::ErrorKind::AlreadyExists => {
                     info!("Symlink target already exists. Skipping.")
-                },
+                }
                 _ => return Result::Err(Error::IO(e)),
-            }
+            },
         }
         sync_copy(
             &link_dest_absolute,
